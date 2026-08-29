@@ -27,7 +27,7 @@ sys.path.insert(0, str(_HERE))
 
 import yotta_verify as yv  # noqa: E402
 
-VERSION = "0.1.0"
+VERSION = "0.2.0"
 TOOL_NAME = "yotta-verify-mcp"
 CN_NAME = "元信"
 MCP_PROTOCOL = "2025-03-26"
