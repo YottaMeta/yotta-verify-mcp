@@ -55,36 +55,7 @@ CLI 同一套扫描，暴露成四个 MCP 工具，让任意 MCP 客户端（Cla
 
 ## MCP 客户端配置
 
-在你的 MCP 客户端 `mcpServers` 里加一个 server 条目。两种等价写法：
-
-**用本地 Python 脚本（推荐完整安装）：**
-
-```json
-{
-  "mcpServers": {
-    "yotta-verify-mcp": {
-      "command": "python",
-      "args": ["D:/path/to/yotta-verify-mcp/scripts/yotta_verify_mcp.py"]
-    }
-  }
-}
-```
-
-**用 npm（推荐一行、始终最新）：**
-
-```json
-{
-  "mcpServers": {
-    "yotta-verify-mcp": {
-      "command": "npx",
-      "args": ["-y", "@yottameta/yotta-verify-mcp"]
-    }
-  }
-}
-```
-
-Windows 用 `python`，Linux / macOS 用 `python3`。server 走 stdio JSON-RPC 2.0（协议版本
-`2025-03-26`）；配置好后应在客户端看到这四个工具。
+通常无需手动写 `mcpServers`：安装本技能后，AI 会按 `SKILL.md`「AI 自动接入」自动写入 `yotta-verify-mcp` 条目，并在客户端未暴露 MCP 工具时自动降级 CLI 扫描。两种配置写法见 `SKILL.md`（本地 Python 或 npx）。
 
 ## 工具参考
 
@@ -112,7 +83,7 @@ Windows 用 `python`，Linux / macOS 用 `python3`。server 走 stdio JSON-RPC 2
 | `tests` | integer | 可选：引擎测试数 |
 | `out` | string | 可选：将 SVG 写入该路径 |
 
-> 注意：徽章的 `version` 段反映的是 <b>扫描引擎</b>（yotta-verify）的版本，不是 MCP 包（0.1.0）
+> 注意：徽章的 `version` 段反映的是 <b>扫描引擎</b>（yotta-verify）的版本，不是 MCP 包（0.1.1）
 > 的版本。想显示别的版本请传 `version`。
 
 ### `gate_check`

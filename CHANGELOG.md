@@ -1,5 +1,11 @@
 # 更新日志
 
+## v0.1.1 (2026-08-29)
+
+- AI 自动接入（MCP 配置，AI 负责）：安装后由 AI 自动写入 `mcpServers`（本地 Python 脚本或 npx 二选一，AI 自选），用户无需手动配置；本地路径用 `<技能目录>/scripts/yotta_verify_mcp.py` 占位、不写死盘符；客户端未暴露 MCP 工具时自动降级 CLI 扫描（verdict 一致）。
+- 按需自动调用：安装 / 首次使用某技能、插件、MCP server 前自动调用 scan_skill / gate_check 做装前扫描；完成后不常驻、不卸载。
+- README：把 `mcpServers` 两段配置移入 SKILL.md，README 改为指引。
+
 ## v0.1.0 (2026-08-29)
 
 初始发布：

@@ -58,36 +58,7 @@ and never fixes anything.
 
 ## MCP client configuration
 
-Add a server entry to your MCP client's `mcpServers`. Two equivalent forms:
-
-**Using the local Python script (recommended for a full install):**
-
-```json
-{
-  "mcpServers": {
-    "yotta-verify-mcp": {
-      "command": "python",
-      "args": ["D:/path/to/yotta-verify-mcp/scripts/yotta_verify_mcp.py"]
-    }
-  }
-}
-```
-
-**Using npm (recommended for a one-line, always-latest setup):**
-
-```json
-{
-  "mcpServers": {
-    "yotta-verify-mcp": {
-      "command": "npx",
-      "args": ["-y", "@yottameta/yotta-verify-mcp"]
-    }
-  }
-}
-```
-
-On Windows use `python`, on Linux/macOS use `python3`. The server speaks stdio JSON-RPC 2.0
-(protocol version `2025-03-26`); after configuring it you should see the four tools in your client.
+You usually do not need to write the `mcpServers` entry yourself: after installing this skill, an AI agent auto-adds the `yotta-verify-mcp` entry per the「AI 自动接入」section in `SKILL.md`, and falls back to the CLI scanner when MCP tools are unavailable.
 
 ## Tool reference
 
@@ -117,7 +88,7 @@ Generate an audited badge (local SVG + shields.io URL).
 | `out` | string | Optional: write the SVG to this path |
 
 > Note: the badge's `version` segment reflects the version of the <b>scanning engine</b>
-> (yotta-verify), not the MCP package (0.1.0). Pass `version` to override.
+> (yotta-verify), not the MCP package (0.1.1). Pass `version` to override.
 
 ### `gate_check`
 

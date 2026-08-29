@@ -1,7 +1,7 @@
 ---
 name: yotta-verify-mcp
 description: 元信MCP（yotta-verify-mcp）—— 把元信（yotta-verify）装前安全扫描暴露为 stdio MCP server，提供 scan_skill（目录/包 → verdict+发现）、generate_badge（audited 徽章）、gate_check（CI 闸门）、get_report（JSON/Markdown 报告）四个 MCP 工具。触发：给 MCP 客户端配置元信MCP、把装前信任扫描接入智能体/工作流、调用上列 MCP 工具做扫描；或用户说 MCP元信/元信MCP/trust-mcp/scan-mcp 等。边界：本地离线静态扫描，不上传被测内容、不执行被测代码、不联网；结论需人工确认。
-version: 0.1.0
+version: 0.1.1
 license: MIT
 ---
 
@@ -11,6 +11,45 @@ license: MIT
 先拿到确定性 verdict。零依赖（Python 3.8+ 标准库），复用 yotta_verify.py 内核与 verify_rules.py
 规则表（单源），本地离线静态扫描。
 
+## AI 自动接入（MCP 配置，AI 负责）
+
+核心价值 = 用户安装好本技能后，**AI 自动完成 MCP 配置并按需调用**，用户无需手动改 `mcpServers`。
+
+AI 首次使用本技能前应自动执行：
+
+1. **检查当前 MCP 客户端的 `mcpServers`** 是否已有 `yotta-verify-mcp` 条目；
+2. **若没有 → 自动写入**下面一种 server 条目（由 AI 按客户端情况自选）：
+   - **方式 A · 本地 Python 脚本（推荐完整安装 / 离线可用）**
+     ```json
+     {
+       "mcpServers": {
+         "yotta-verify-mcp": {
+           "command": "python",
+           "args": ["<技能目录>/scripts/yotta_verify_mcp.py"]
+         }
+       }
+     }
+     ```
+     > `<技能目录>` = 本技能实际安装目录，**不要写死盘符路径**；Windows 用 `python`，Linux/macOS 用 `python3`。
+   - **方式 B · npm（推荐一行、始终最新）**
+     ```json
+     {
+       "mcpServers": {
+         "yotta-verify-mcp": {
+           "command": "npx",
+           "args": ["-y", "@yottameta/yotta-verify-mcp"]
+         }
+       }
+     }
+     ```
+3. **提醒用户**：改 `mcpServers` 后多数客户端需**重启 / 重载一次** MCP server 才生效；加载后应看到四个工具。
+4. **降级兜底（重要）**：若客户端未暴露 MCP 工具 / 无法改配置 / server 未加载，则**自动降级为 CLI 直接扫描**
+   （内核同一套、verdict 一致）：`python <技能目录>/scripts/yotta_verify_mcp.py` 或 `npx -y @yottameta/yotta-verify-mcp`。
+
+### 按需自动调用（装前必扫；不常驻、不卸载）
+
+- 当**安装 / 首次使用某个技能、插件或 MCP server** 时，自动调用 `scan_skill`（或 `gate_check`）做装前安全扫描并给 verdict。
+- 扫描完成后本技能**不再主动参与会话**（按需触发，不整篇常驻注入）；**不要卸载**——下次装新东西还会用到。
 ## 何时使用
 
 - 用户要在 MCP 客户端里配置「元信 MCP」server，或问「怎么接元信 MCP」；
@@ -32,8 +71,7 @@ license: MIT
 
 ## 使用流程
 
-1. **配置**：在 MCP 客户端 `mcpServers` 加一项。`command=python` +
-   `args=["<绝对路径>/scripts/yotta_verify_mcp.py"]`，或 `command=npx + args=["-y","@yottameta/yotta-verify-mcp"]`。
+1. **配置**：按上一节「AI 自动接入」，由 AI 自动写入 `mcpServers`（本地 Python 或 npx 二选一），**用户无需手动配置**。
 2. **确认**：初始化后应看到四个工具。对目标调用 `scan_skill`，或直接 `gate_check` / `get_report`。
 3. **解读**：verdict（SAFE TO INSTALL / INSTALL WITH CAUTION / REVIEW REQUIRED / DO NOT INSTALL）
    是确定性静态结论；发现里 low/info（如 URL 类）属预期，需人工复核是否真风险。
