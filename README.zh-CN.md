@@ -12,7 +12,7 @@
 <b>报告</b>。</p>
 <p align="center">触发场景：在 MCP 客户端配置元信 MCP、把装前信任扫描接入智能体 / 工作流、
 调用上述 MCP 工具做扫描。</p>
-<p align="center">零外部依赖（Python 3.8+ 标准库）；Windows + Linux + macOS；纯本地离线——
+<p align="center">零依赖（Python 3.8+ 标准库）；Windows + Linux + macOS；纯本地离线——
 不联网、不执行被测代码。</p>
 
 <p align="center">
@@ -78,7 +78,7 @@ CLI 同一套扫描，暴露成四个 MCP 工具，让任意 MCP 客户端（Cla
 | `target` | string | 可选：扫描它来取得 verdict |
 | `verdict` | string | 可选：直接指定 verdict |
 | `validate` | string | 可选：`pass` / `fail`（validate-skill 结果） |
-| `vetter` / `audit` | string | 可选：要并入的外部 verdict |
+| `vetter` / `audit` | string | 可选：要并入的 verdict |
 | `version` | string | 可选：版本标签。默认取 <b>扫描引擎（yotta-verify）版本</b>（如 0.1.1） |
 | `tests` | integer | 可选：引擎测试数 |
 | `out` | string | 可选：将 SVG 写入该路径 |
