@@ -1,6 +1,6 @@
 {
   "name": "@yottameta/yotta-verify-mcp",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "YuanXinMCP (元信MCP) - the pre-install security scanner for Agent skills, exposed as a stdio MCP server: scan_skill (dir/package -> verdict + findings), generate_badge (audited badge), gate_check (CI gate), get_report (JSON/Markdown). Local offline static scan; no upload of scanned content, no execution of scanned code; human confirmation required.",
   "license": "MIT",
   "keywords": [
@@ -39,5 +39,6 @@
   "bin": {
     "yotta-verify-mcp": "bin/yotta-verify-mcp.js",
     "yotta-verify-mcp-install": "bin/install.js"
-  }
+  },
+  "mcpName": "io.github.YottaMeta/yotta-verify-mcp"
 }

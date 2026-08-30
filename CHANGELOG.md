@@ -1,5 +1,9 @@
 # 更新日志
 
+## v0.2.3 (2026-08-30)
+
+- 为官方 MCP Registry 发布新增 package.json `mcpName` 字段（io.github.YottaMeta/yotta-verify-mcp），版本四件对齐 0.2.3。
+
 ## v0.2.2 (2026-08-30)
 
 - 措辞规范：正文不再写版本号、统一对外表述；与元信 yotta-verify 同步内核（含双视角综合报告）。
@@ -49,5 +53,5 @@
 - 边界：本地离线静态扫描；目录扫描完全离线；npm 包扫描仅下载公开包（不上传被测内容）；
   不执行被测代码；结论需人工确认。
 - 形态：三个发布件（GitHub YottaMeta/yotta-verify-mcp + npm @yottameta/yotta-verify-mcp +
-  ClawHub 元信 MCP）；0 元免费开源（MIT）。
+  ClawHub 元信 MCP）；MIT 开源发布。
 - 测试：32 用例双版本（Python 3.8 / 3.13）全绿（含 stdio 端到端、恶意检测、错误入参）。
