@@ -6,3 +6,4 @@ node_modules/
 .tmp/
 .npmignore
 scripts/test_*.py
+server.json
