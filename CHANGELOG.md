@@ -1,5 +1,11 @@
 # 更新日志
 
+## v0.3.0 (2026-09-06)
+
+- **MCP 协议对齐最新版 2026-07-28（无状态时代）**：升级 dual-era——modern 直连（server/discover 免握手、逐请求 _meta 版本声明、resultType、-32022 版本错误）服务新客户端；legacy（initialize 握手，protocolVersion 2025-11-25）兼容旧客户端，旧形状响应零惊扰。
+- 对外标注：SKILL.md 写明「基于 MCP 最新协议 2026-07-28（向后兼容 2025-11-25 及更早握手）」。
+- 测试：新增 modern 用例 6 项，全套件 49/49。
+
 ## v0.2.3 (2026-08-30)
 
 - 为官方 MCP Registry 发布新增 package.json `mcpName` 字段（io.github.YottaMeta/yotta-verify-mcp），版本四件对齐 0.2.3。
