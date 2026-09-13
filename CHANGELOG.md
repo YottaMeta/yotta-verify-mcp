@@ -1,5 +1,12 @@
 # 更新日志
 
+## v0.4.0 (2026-09-13)
+
+**P0-6 全家族铺开**：
+
+- 新增 `skill-manifest.json`，声明 `before_install` / `scan_skill` / `fallback: wrapper`。
+- 强制技能覆盖检查要求包内 manifest 与至少一项 hook 声明。
+
 ## v0.3.0 (2026-09-06)
 
 - **MCP 协议对齐最新版 2026-07-28（无状态时代）**：升级 dual-era——modern 直连（server/discover 免握手、逐请求 _meta 版本声明、resultType、-32022 版本错误）服务新客户端；legacy（initialize 握手，protocolVersion 2025-11-25）兼容旧客户端，旧形状响应零惊扰。
