@@ -58,7 +58,7 @@ and never fixes anything.
 
 ## MCP client configuration
 
-You usually do not need to write the `mcpServers` entry yourself: after installing this skill, an AI agent auto-adds the `yotta-verify-mcp` entry per the「AI 自动接入」section in `SKILL.md`, and falls back to the CLI scanner when MCP tools are unavailable.
+MCP configuration is optional. An AI agent may show you the target config file, the exact `mcpServers` JSON, and the effect, then wait for your explicit consent before writing anything. If you decline, use the bundled CLI scanner directly; the scan result is unchanged.
 
 ## Tool reference
 
@@ -88,7 +88,7 @@ Generate an audited badge (local SVG + shields.io URL).
 | `out` | string | Optional: write the SVG to this path |
 
 > Note: the badge's `version` segment reflects the version of the <b>scanning engine</b>
-> (yotta-verify), not the MCP package (0.1.4). Pass `version` to override.
+> (yotta-verify), not the MCP package (0.4.1). Pass `version` to override.
 
 ### `gate_check`
 
@@ -125,7 +125,7 @@ This is a **local, offline, static** scan:
 
 ## Installation of the skill
 
-The package also ships a `SKILL.md` so an agent can learn how to configure and use the MCP server.
+The package also ships a `SKILL.md` so an agent can explain how to configure and use the MCP server with explicit user consent.
 Pick any of the four methods below (skill files come from **npm**; GitHub can be slow without a proxy).
 
 ### Method 1: npm one-liner (recommended)
@@ -161,11 +161,14 @@ bash install.sh --list           # list agents -> default directories
 
 ## Development & validation
 
-The package ships its own test suite (included in the published package):
+Repository validation includes the MCP engine suite and a documentation consent regression:
 
 ```bash
-# Run the full suite (32 cases) from the skill directory (Python 3.8 / 3.13 both green)
+# MCP engine suite (Python 3.8 / 3.13)
 python scripts/test_yotta_verify_mcp.py
+
+# Documentation consent regression
+node --test test/docs-consent.test.js
 
 # Run the MCP server directly for debugging
 python scripts/yotta_verify_mcp.py

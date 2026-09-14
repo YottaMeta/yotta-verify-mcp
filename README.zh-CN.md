@@ -55,7 +55,7 @@ CLI 同一套扫描，暴露成四个 MCP 工具，让任意 MCP 客户端（Cla
 
 ## MCP 客户端配置
 
-通常无需手动写 `mcpServers`：安装本技能后，AI 会按 `SKILL.md`「AI 自动接入」自动写入 `yotta-verify-mcp` 条目，并在客户端未暴露 MCP 工具时自动降级 CLI 扫描。两种配置写法见 `SKILL.md`（本地 Python 或 npx）。
+MCP 配置是可选项。AI 可以先展示目标配置文件、完整 `mcpServers` JSON 与影响，等你明确同意后再写入；你拒绝时不写，直接使用内置 CLI 扫描，结果一致。两种配置写法见 `SKILL.md`（本地 Python 或 npx）。
 
 ## 工具参考
 
@@ -83,7 +83,7 @@ CLI 同一套扫描，暴露成四个 MCP 工具，让任意 MCP 客户端（Cla
 | `tests` | integer | 可选：引擎测试数 |
 | `out` | string | 可选：将 SVG 写入该路径 |
 
-> 注意：徽章的 `version` 段反映的是 <b>扫描引擎</b>（yotta-verify）的版本，不是 MCP 包（0.1.4）
+> 注意：徽章的 `version` 段反映的是 <b>扫描引擎</b>（yotta-verify）的版本，不是 MCP 包（0.4.1）
 > 的版本。想显示别的版本请传 `version`。
 
 ### `gate_check`
@@ -118,7 +118,7 @@ CI 装前闸门。
 
 ## 技能安装
 
-该包还带一份 `SKILL.md`，让智能体学会如何配置与使用这个 MCP server。以下四种方式任选
+该包还带一份 `SKILL.md`，让智能体学会如何在用户明确同意后配置与使用这个 MCP server。以下四种方式任选
 （技能文件一律从 **npm** 获取；GitHub 无代理较慢）。
 
 ### 方式一：npm 一行装（推荐）
@@ -154,11 +154,14 @@ bash install.sh --list           # 列出智能体 -> 默认目录
 
 ## 开发与校验
 
-技能包自带测试脚本（随发布包一起分发）：
+仓库校验包含 MCP 引擎测试与文档授权边界回归：
 
 ```bash
-# 在技能目录内跑全量用例（32 个；Python 3.8 / 3.13 全绿）
+# MCP 引擎用例（Python 3.8 / 3.13）
 python scripts/test_yotta_verify_mcp.py
+
+# 文档授权边界回归
+node --test test/docs-consent.test.js
 
 # 直接跑 MCP server 用于调试
 python scripts/yotta_verify_mcp.py
