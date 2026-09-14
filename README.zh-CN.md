@@ -83,8 +83,8 @@ MCP 配置是可选项。AI 可以先展示目标配置文件、完整 `mcpServe
 | `tests` | integer | 可选：引擎测试数 |
 | `out` | string | 可选：将 SVG 写入该路径 |
 
-> 注意：徽章的 `version` 段反映的是 <b>扫描引擎</b>（yotta-verify）的版本，不是 MCP 包（0.4.1）
-> 的版本。想显示别的版本请传 `version`。
+> 注意：徽章的 `version` 段反映的是包内 <b>扫描引擎</b>（yotta-verify）的版本，可能与 MCP 包版本不同。
+> 想显示别的版本请传 `version`。
 
 ### `gate_check`
 

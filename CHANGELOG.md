@@ -1,5 +1,15 @@
 # 更新日志
 
+## v0.4.2 (2026-09-14)
+
+**STR-004 误报修复（与元信同源）**：
+
+- 同步扫描内核的 name hint 语义：npm tarball 与解压后的 `package/` 根目录从根 `package.json` 的 `name` 推导期望 slug，不再使用临时目录名或压缩包文件名。
+- MCP `scan_skill` 对本地 tarball、解压包根与 npm 包名路径统一使用该语义；真实安装目录错名仍保留 STR-004 medium。
+- 检测型技能的文档降级不再吞掉 `Structure` 类发现，真实错目录名仍保留 STR-004 medium。
+- 新增回归：`package/`、npm tarball、真实错目录名。
+- 安全加固：同步内核的 tarball 解压拒绝符号链接、硬链接、设备与 FIFO 成员，Python 3.12+ 叠加官方 `data` 过滤器；新增两组链接成员回归。
+
 ## v0.4.1 (2026-09-14)
 
 **授权边界整改**：

@@ -87,8 +87,8 @@ Generate an audited badge (local SVG + shields.io URL).
 | `tests` | integer | Optional: engine test count |
 | `out` | string | Optional: write the SVG to this path |
 
-> Note: the badge's `version` segment reflects the version of the <b>scanning engine</b>
-> (yotta-verify), not the MCP package (0.4.1). Pass `version` to override.
+> Note: the badge's `version` segment reflects the version of the bundled <b>scanning engine</b>
+> (yotta-verify), which may differ from the MCP package version. Pass `version` to override.
 
 ### `gate_check`
 

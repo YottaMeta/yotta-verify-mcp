@@ -14,6 +14,7 @@ import os
 import shutil
 import subprocess
 import sys
+import tarfile
 import tempfile
 from pathlib import Path
 
@@ -87,8 +88,8 @@ def test_initialize():
           resp.get("result", {}).get("protocolVersion") == "2025-11-25", str(resp))
     check("initialize serverInfo.name = yotta-verify-mcp",
           resp.get("result", {}).get("serverInfo", {}).get("name") == "yotta-verify-mcp", str(resp))
-    check("initialize version = 0.4.1",
-          resp.get("result", {}).get("serverInfo", {}).get("version") == "0.4.1", str(resp))
+    check("initialize version = 0.4.2",
+          resp.get("result", {}).get("serverInfo", {}).get("version") == "0.4.2", str(resp))
     check("initialize capabilities.tools 存在",
           "tools" in resp.get("result", {}).get("capabilities", {}), str(resp))
 
@@ -116,6 +117,99 @@ def test_scan_skill_clean(tmp):
           data.get("verdict"))
     check("scan_skill(clean) meta.files_scanned >= 1", data.get("meta", {}).get("files_scanned", 0) >= 1,
           str(data.get("meta")))
+
+
+def test_scan_skill_package_name_hint(tmp):
+    package_json = json.dumps({
+        "name": "@yottameta/demo-clean",
+        "version": "1.0.0",
+    })
+    src = mk_skill(Path(tmp) / "pkg-src", {
+        "SKILL.md": CLEAN_SKILL,
+        "package.json": package_json,
+    })
+    package_root = Path(tmp) / "package-root" / "package"
+    if package_root.exists():
+        shutil.rmtree(package_root)
+    shutil.copytree(src, package_root)
+
+    resp_dir = m.handle_message({"jsonrpc": "2.0", "id": 31, "method": "tools/call",
+                                 "params": {"name": "scan_skill", "arguments": {"target": str(package_root)}}})
+    data_dir = json.loads(resp_dir["result"]["content"][0]["text"])
+    check("scan_skill(package/) 不误报 STR-004",
+          not any(f.get("rule_id") == "STR-004" for f in data_dir.get("findings", [])),
+          str(data_dir.get("findings", [])))
+    check("scan_skill(package/) 无 medium",
+          data_dir.get("counts", {}).get("medium", 0) == 0,
+          str(data_dir.get("counts")))
+
+    tgz = Path(tmp) / "demo-clean.tgz"
+    with tarfile.open(str(tgz), "w:gz") as tf:
+        for p in sorted(package_root.rglob("*")):
+            if p.is_file():
+                tf.add(str(p), arcname="package/" + str(p.relative_to(package_root)))
+    resp_tar = m.handle_message({"jsonrpc": "2.0", "id": 32, "method": "tools/call",
+                                 "params": {"name": "scan_skill", "arguments": {"target": str(tgz)}}})
+    data_tar = json.loads(resp_tar["result"]["content"][0]["text"])
+    check("scan_skill(npm tarball) 不误报 STR-004",
+          not any(f.get("rule_id") == "STR-004" for f in data_tar.get("findings", [])),
+          str(data_tar.get("findings", [])))
+    check("scan_skill(npm tarball) 无 medium",
+          data_tar.get("counts", {}).get("medium", 0) == 0,
+          str(data_tar.get("counts")))
+
+
+def test_safe_extract_rejects_links(tmp):
+    def rejects(member):
+        tag = member.type.decode("ascii", "replace")
+        tgz = Path(tmp) / ("unsafe-" + tag + ".tgz")
+        dest = Path(tmp) / ("unsafe-" + tag)
+        dest.mkdir(parents=True, exist_ok=True)
+        with tarfile.open(str(tgz), "w:gz") as tf:
+            tf.addfile(member)
+        try:
+            with tarfile.open(str(tgz), "r:gz") as tf:
+                yv._safe_extract(tf, dest)
+        except ValueError:
+            return True
+        except Exception:
+            return False
+        return False
+
+    symlink = tarfile.TarInfo("package/link")
+    symlink.type = tarfile.SYMTYPE
+    symlink.linkname = "../../outside"
+    check("拒绝符号链接成员", rejects(symlink))
+
+    hardlink = tarfile.TarInfo("package/hard")
+    hardlink.type = tarfile.LNKTYPE
+    hardlink.linkname = "../../outside"
+    check("拒绝硬链接成员", rejects(hardlink))
+
+
+def test_scan_skill_real_mismatch_remains(tmp):
+    d = mk_skill(Path(tmp) / "wrong-name", {"SKILL.md": CLEAN_SKILL})
+    resp = m.handle_message({"jsonrpc": "2.0", "id": 33, "method": "tools/call",
+                             "params": {"name": "scan_skill", "arguments": {"target": str(d)}}})
+    data = json.loads(resp["result"]["content"][0]["text"])
+    check("scan_skill(错目录名) 仍命中 STR-004 medium",
+          any(f.get("rule_id") == "STR-004" and f.get("severity") == "medium"
+              for f in data.get("findings", [])),
+          str(data.get("findings", [])))
+
+
+def test_scan_skill_detector_mismatch_remains(tmp):
+    d = mk_skill(Path(tmp) / "detector-wrong-name", {
+        "SKILL.md": CLEAN_SKILL,
+        "scripts/verify_rules.py": "# detector signature for downgrade regression\n",
+    })
+    resp = m.handle_message({"jsonrpc": "2.0", "id": 34, "method": "tools/call",
+                             "params": {"name": "scan_skill", "arguments": {"target": str(d)}}})
+    data = json.loads(resp["result"]["content"][0]["text"])
+    check("scan_skill(检测型技能错目录名) 仍命中 STR-004 medium",
+          any(f.get("rule_id") == "STR-004" and f.get("severity") == "medium"
+              for f in data.get("findings", [])),
+          str(data.get("findings", [])))
 
 
 def test_scan_skill_evil(tmp):
@@ -294,6 +388,10 @@ def main():
         test_initialize()
         test_tools_list()
         test_scan_skill_clean(tmp)
+        test_scan_skill_package_name_hint(tmp)
+        test_safe_extract_rejects_links(tmp)
+        test_scan_skill_real_mismatch_remains(tmp)
+        test_scan_skill_detector_mismatch_remains(tmp)
         test_scan_skill_evil(tmp)
         test_gate_check(tmp)
         test_generate_badge()
