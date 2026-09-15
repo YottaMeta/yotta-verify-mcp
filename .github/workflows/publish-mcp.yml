@@ -1,6 +1,12 @@
 name: Publish to MCP Registry
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - server.json
+      - .github/workflows/publish-mcp.yml
   workflow_dispatch:
 
 permissions:
