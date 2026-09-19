@@ -3,7 +3,7 @@
   "slug": "yotta-verify-mcp",
   "name": "元信MCP",
   "package": "@yottameta/yotta-verify-mcp",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "trust": "yottameta",
   "install": {
     "idempotent": true

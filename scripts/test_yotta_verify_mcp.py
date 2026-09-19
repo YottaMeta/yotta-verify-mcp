@@ -88,8 +88,8 @@ def test_initialize():
           resp.get("result", {}).get("protocolVersion") == "2025-11-25", str(resp))
     check("initialize serverInfo.name = yotta-verify-mcp",
           resp.get("result", {}).get("serverInfo", {}).get("name") == "yotta-verify-mcp", str(resp))
-    check("initialize version = 0.4.2",
-          resp.get("result", {}).get("serverInfo", {}).get("version") == "0.4.2", str(resp))
+    check("initialize version = 0.4.3",
+          resp.get("result", {}).get("serverInfo", {}).get("version") == "0.4.3", str(resp))
     check("initialize capabilities.tools 存在",
           "tools" in resp.get("result", {}).get("capabilities", {}), str(resp))
 
