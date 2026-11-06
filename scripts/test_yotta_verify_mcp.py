@@ -11,6 +11,7 @@ stdio 端到端（子进程回放）。
 import io
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -88,8 +89,8 @@ def test_initialize():
           resp.get("result", {}).get("protocolVersion") == "2025-11-25", str(resp))
     check("initialize serverInfo.name = yotta-verify-mcp",
           resp.get("result", {}).get("serverInfo", {}).get("name") == "yotta-verify-mcp", str(resp))
-    check("initialize version = 0.4.4",
-          resp.get("result", {}).get("serverInfo", {}).get("version") == "0.4.4", str(resp))
+    check("initialize version = %s" % m.VERSION,
+          resp.get("result", {}).get("serverInfo", {}).get("version") == m.VERSION, str(resp))
     check("initialize capabilities.tools 存在",
           "tools" in resp.get("result", {}).get("capabilities", {}), str(resp))
 
@@ -103,6 +104,18 @@ def test_tools_list():
           str(names))
     for t in tools:
         check("工具 %s 有 inputSchema" % t["name"], "inputSchema" in t and "properties" in t["inputSchema"], str(t))
+
+
+def test_pri001_special_bits():
+    print("== PRI-001 特殊权限位 ==")
+    rule = next(r for r in yv.PATTERN_RULES if r.id == "PRI-001")
+    for sample in ("chmod " + "600 x", "chmod " + "644 x", "chmod " + "700 x",
+                   "chmod " + "755 x", "chmod " + "777 x"):
+        check("常规权限不命中 %s" % sample, re.search(rule.pattern, sample) is None)
+    for sample in ("chmod " + "4755 x", "chmod " + "2755 x", "chmod " + "1777 x",
+                   "chmod " + "6755 x", "chmod " + "+s x", "chmod " + "u+s x",
+                   "chmod " + "+t x"):
+        check("特殊权限命中 %s" % sample, re.search(rule.pattern, sample) is not None)
 
 
 def test_scan_skill_clean(tmp):
@@ -387,6 +400,7 @@ def main():
     try:
         test_initialize()
         test_tools_list()
+        test_pri001_special_bits()
         test_scan_skill_clean(tmp)
         test_scan_skill_package_name_hint(tmp)
         test_safe_extract_rejects_links(tmp)
